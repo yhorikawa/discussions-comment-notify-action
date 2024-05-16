@@ -1,0 +1,31 @@
+name: "Github Discussion Comment to Slack"
+description: "Notify Slack when a new comment is posted on Github Discussion."
+inputs:
+  slack-mention-map-path:
+    description: "Path to the mention map file. default: .github/slack-mention-map.json"
+    required: false
+    default: ".github/slack-mention-map.json"
+  slack-api-token:
+    description: "Slack API"
+    required: true
+  slack-channel:
+    description: "Slack channel to post the message."
+    required: true
+  github-token:
+    description: "Github token. Used to fetch the slack mention map file."
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set Up Go
+      uses: actions/setup-go@v5
+
+    - name: Notify Slack
+      shell: bash
+      run: go run ${{ github.action_path }}/main.go
+      env:
+        INPUT_SLACK_API_TOKEN: ${{ inputs.slack-api-token }}
+        INPUT_SLACK_CHANNEL: ${{ inputs.slack-channel }}
+        INPUT_SLACK_MENTION_MAP_PATH: ${{ inputs.slack-mention-map-path }}
+        INPUT_GITHUB_TOKEN: ${{ inputs.github-token }}
